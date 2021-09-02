@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.sscs.ccd.presubmit.actionpostponementrequest;
 
 import lombok.extern.slf4j.Slf4j;
+<<<<<<< HEAD
+=======
+import org.apache.commons.lang3.StringUtils;
+>>>>>>> e95ef3f16 (SSCS-9438- initial event handler)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sscs.ccd.callback.Callback;
 import uk.gov.hmcts.reform.sscs.ccd.callback.CallbackType;
+<<<<<<< HEAD
 import uk.gov.hmcts.reform.sscs.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.sscs.ccd.domain.*;
 import uk.gov.hmcts.reform.sscs.ccd.presubmit.InterlocReferralReason;
@@ -17,6 +22,33 @@ import java.util.ArrayList;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.sscs.ccd.domain.ProcessRequestAction.SEND_TO_JUDGE;
+=======
+import uk.gov.hmcts.reform.sscs.ccd.callback.DocumentType;
+import uk.gov.hmcts.reform.sscs.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.sscs.ccd.domain.*;
+import uk.gov.hmcts.reform.sscs.ccd.presubmit.InterlocReferralReason;
+import uk.gov.hmcts.reform.sscs.ccd.presubmit.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.sscs.service.FooterService;
+import uk.gov.hmcts.reform.sscs.service.UserDetailsService;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.sscs.ccd.callback.DocumentType.AUDIO_VIDEO_EVIDENCE_DIRECTION_NOTICE;
+import static uk.gov.hmcts.reform.sscs.ccd.domain.DwpState.DIRECTION_ACTION_REQUIRED;
+import static uk.gov.hmcts.reform.sscs.ccd.domain.ProcessedAction.*;
+import static uk.gov.hmcts.reform.sscs.ccd.presubmit.InterlocReviewState.*;
+import static uk.gov.hmcts.reform.sscs.ccd.presubmit.processaudiovideo.ProcessAudioVideoActionDynamicListItems.*;
+import static uk.gov.hmcts.reform.sscs.util.AudioVideoEvidenceUtil.*;
+>>>>>>> e95ef3f16 (SSCS-9438- initial event handler)
 
 @Service
 @Slf4j
@@ -46,16 +78,26 @@ public class ActionPostponementRequestAboutToSubmitHandler implements PreSubmitC
 
         PreSubmitCallbackResponse<SscsCaseData> response = new PreSubmitCallbackResponse<>(sscsCaseData);
 
+<<<<<<< HEAD
         PostponementRequest postponementRequest = sscsCaseData.getPostponementRequest();
         String details = postponementRequest.getPostponementRequestDetails();
         if (postponementRequest.getActionPostponementRequestSelected().equals(SEND_TO_JUDGE.getValue())) {
+=======
+        String details = sscsCaseData.getPostponementRequest().getPostponementRequestDetails();
+        if (StringUtils.isBlank(details)) {
+//            preSubmitCallbackResponse.addError(POSTPONEMENT_DETAILS_IS_MANDATORY);
+        } else {
+>>>>>>> e95ef3f16 (SSCS-9438- initial event handler)
             if (sscsCaseData.getAppealNotePad() == null) {
                 sscsCaseData.setAppealNotePad(NotePad.builder().notesCollection(new ArrayList<>()).build());
             }
             sscsCaseData.getAppealNotePad().getNotesCollection()
                     .add(createPostponementRequestNote(userAuthorisation, details));
+<<<<<<< HEAD
             sscsCaseData.setInterlocReviewState(InterlocReviewState.REVIEW_BY_JUDGE.getId());
             sscsCaseData.setInterlocReferralReason(InterlocReferralReason.REVIEW_POSTPONEMENT_REQUEST.getId());
+=======
+>>>>>>> e95ef3f16 (SSCS-9438- initial event handler)
         }
 
         return response;
