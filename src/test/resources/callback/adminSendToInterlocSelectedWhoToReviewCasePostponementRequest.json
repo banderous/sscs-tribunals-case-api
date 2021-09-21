@@ -24,12 +24,49 @@
     ],
     "security_classification": "PUBLIC",
     "case_data": {
+      "selectWhoReviewsCase": {
+        "value": {
+          "code": "postponementRequestInterlocSendToTcw",
+          "label": "Postponement request for interloc - send to TCW"
+        },
+        "list_items": [
+          {
+            "code": "reviewByTcw",
+            "label": "Review by TCW"
+          },
+          {
+            "code": "reviewByJudge",
+            "label": "Review by Judge"
+          },
+          {
+            "code": "postponementRequestInterlocSendToTcw",
+            "label": "Postponement request for interloc - send to TCW"
+          }
+        ]
+      },
+      "originalSender": {
+        "value": {
+          "code": "appellant",
+          "label": "Appellant (or Appointee)"
+        },
+        "list_items": [
+          {
+            "code": "appellant",
+            "label": "Appellant (or Appointee)"
+          },
+          {
+            "code": "representative",
+            "label": "Representative"
+          }
+        ]
+      },
+      "postponementPreviewDocument": {
+        "document_url": "http://dm-store:5005/documents/7539160a-b124-4539-b7c1-f3dcfbcea94c",
+        "document_binary_url": "http://dm-store:5005/documents/7539160a-b124-4539-b7c1-f3dcfbcea94c/binary",
+        "document_filename": "postponementPreviewDocument.pdf"
+      },
       "dwpTimeExtension": [
       ],
-      "createdInGapsFrom": "readyToList",
-      "issueCode": "CC",
-      "benefitCode": "002",
-      "isInterlocRequired": "IS_INTERLOC_REQUIRED_VALUE",
       "hearings": [
         {
           "value": {
@@ -53,18 +90,6 @@
           "id": "491adfdc-a8d3-430d-bd47-5ae3eac2149f"
         }
       ],
-      "selectWhoReviewsCase": {
-        "value": {
-          "code": "judge",
-          "label": "Judge"
-        },
-        "list_items": [
-          {
-            "code": "judge",
-            "label": "Judge"
-          }
-        ]
-      },
       "subscriptions": {
         "appellantSubscription": {
           "wantSmsNotifications": "Yes",
@@ -85,15 +110,14 @@
       },
       "sscsDocument" : [ {
         "value" : {
-          "documentType" : "audioDocument",
-          "documentFileName" : "myAudio.mp3",
-          "documentDateAdded" : "2021-05-10",
+          "documentType" : "appellantEvidence",
+          "documentFileName" : "11111.pdf",
+          "documentDateAdded" : "2018-10-10",
           "evidenceIssued": "Yes",
-          "partyUploaded": "appellant",
           "documentLink" : {
-            "document_url" : "http://www.myAudio.mp3",
-            "document_binary_url" : "http://www.myAudio.mp3/binary",
-            "document_filename" : "myAudio.mp3"
+            "document_url" : "http://www.bbc.com",
+            "document_binary_url" : "http://www.bbc.com/binary",
+            "document_filename" : "myfile1.jpg"
           }
         }
       },
@@ -109,21 +133,21 @@
               "document_filename" : "myfile2.jpg"
             }
           }
-        }],
-      "dwpDocuments" : [ {
-        "value" : {
-          "documentType" : "videoDocument",
-          "documentFileName" : "myVideo.mp4",
-          "documentDateAdded" : "2021-05-10",
-          "evidenceIssued": "Yes",
-          "partyUploaded": "dwp",
-          "documentLink" : {
-            "document_url" : "http://www.myVideo.mp4",
-            "document_binary_url" : "http://www.myVideo.mp4/binary",
-            "document_filename" : "myVideo.mp4"
+        },
+        {
+          "value" : {
+            "documentType" : "decisionIssued",
+            "documentFileName" : "oldDecisionIssued.pdf",
+            "documentDateAdded" : "2018-10-12",
+            "evidenceIssued": "Yes",
+            "bundleAddition": "A",
+            "documentLink" : {
+              "document_url" : "http://www.itv3.com",
+              "document_binary_url" : "http://www.itv3.com/binary",
+              "document_filename" : "myfile3.jpg"
+            }
           }
-        }
-      }],
+        }],
       "reissueFurtherEvidenceDocument": {},
       "resendToAppellant": "NO",
       "resendToRepresentative": "NO",
@@ -145,12 +169,7 @@
         "city": "BIRMINGHAM"
       },
       "appeal": {
-        "mrnDetails": {
-          "mrnDate": "2018-06-29",
-          "mrnLateReason": "Lost my paperwork",
-          "dwpIssuingOffice": "PIP DWP (2)",
-          "mrnMissingReason": null
-        },
+        "mrnDetails": {},
         "appellant": {
           "name": {
             "title": "Miss",
@@ -177,8 +196,8 @@
           "isAddressSameAsAppointee": null
         },
         "benefitType": {
-          "code": "PIP",
-          "description": "Personal Independence Payment"
+          "code": "ESA",
+          "description": "Employment Support Allowance"
         },
         "receivedVia": "PAPER",
         "hearingOptions": {
@@ -246,7 +265,6 @@
           "id": "29a280db-7937-49db-ae7c-84c62581e3a2"
         }
       ],
-      "originalSender": {},
       "furtherEvidenceAction": {}
     },
     "data_classification": {
@@ -661,5 +679,5 @@
       }
     }
   },
-  "event_id": "playbackAudioVideoEvidence"
+  "event_id": "adminSendToInterlocutoryReviewState"
 }
