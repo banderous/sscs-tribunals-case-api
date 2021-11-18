@@ -7,6 +7,10 @@ import uk.gov.hmcts.reform.sscs.ccd.domain.CcdValue;
 import uk.gov.hmcts.reform.sscs.ccd.domain.OtherParty;
 
 public class OtherPartyDataUtil {
+
+    private OtherPartyDataUtil() {
+    }
+
     public static void assignOtherPartyId(List<CcdValue<OtherParty>> otherParties) {
         int maxId = 0;
         for (CcdValue<OtherParty> otherParty : otherParties) {
