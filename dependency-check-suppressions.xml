@@ -92,4 +92,10 @@
      ]]></notes>
         <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
     </suppress>
+    <suppress until="2022-02-28">
+        <notes><![CDATA[
+   file name: spring-security-core-5.4.7.jar
+   ]]></notes>
+        <cve>CWE-862</cve>
+    </suppress>
 </suppressions>
