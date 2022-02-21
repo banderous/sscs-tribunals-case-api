@@ -16,8 +16,6 @@ import static uk.gov.hmcts.reform.sscs.util.OtherPartyDataUtil.withEmailPredicat
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
@@ -35,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.sscs.ccd.domain.*;
 import uk.gov.hmcts.reform.sscs.ccd.presubmit.InterlocReferralReason;
 import uk.gov.hmcts.reform.sscs.ccd.presubmit.InterlocReviewState;
@@ -43,7 +41,7 @@ import uk.gov.hmcts.reform.sscs.ccd.service.CcdService;
 import uk.gov.hmcts.reform.sscs.domain.wrapper.Evidence;
 import uk.gov.hmcts.reform.sscs.domain.wrapper.EvidenceDescription;
 import uk.gov.hmcts.reform.sscs.idam.IdamService;
-import uk.gov.hmcts.reform.sscs.service.EvidenceManagementService;
+import uk.gov.hmcts.reform.sscs.service.EvidenceManagementSecureDocStoreService;
 import uk.gov.hmcts.reform.sscs.service.OnlineHearingService;
 import uk.gov.hmcts.reform.sscs.service.PdfStoreService;
 import uk.gov.hmcts.reform.sscs.service.conversion.FileToPdfConversionService;
@@ -62,7 +60,7 @@ public class EvidenceUploadService {
     private final OnlineHearingService onlineHearingService;
     private final StoreEvidenceDescriptionService storeEvidenceDescriptionService;
     private final FileToPdfConversionService fileToPdfConversionService;
-    private final EvidenceManagementService evidenceManagementService;
+    private final EvidenceManagementSecureDocStoreService evidenceManagementService;
     private final PdfStoreService pdfStoreService;
 
     public static final String DM_STORE_USER_ID = "sscs";
@@ -75,7 +73,7 @@ public class EvidenceUploadService {
                                  IdamService idamService, OnlineHearingService onlineHearingService,
                                  StoreEvidenceDescriptionService storeEvidenceDescriptionService,
                                  FileToPdfConversionService fileToPdfConversionService,
-                                 EvidenceManagementService evidenceManagementService, PdfStoreService pdfStoreService) {
+                                 EvidenceManagementSecureDocStoreService evidenceManagementService, PdfStoreService pdfStoreService) {
         this.documentManagementService = documentManagementService;
         this.ccdService = ccdService;
         this.idamService = idamService;
@@ -132,7 +130,7 @@ public class EvidenceUploadService {
 
                     List<MultipartFile> convertedFiles = fileToPdfConversionService.convert(singletonList(file));
 
-                    Document document = evidenceManagementService.upload(convertedFiles, DM_STORE_USER_ID).getEmbedded().getDocuments().get(0);
+                    Document document = evidenceManagementService.upload(convertedFiles, idamService.getIdamTokens()).getDocuments().get(0);
 
                     List<SscsDocument> currentDocuments = draftHearingDocumentExtractor.getDocuments().apply(caseDetails.getData());
                     ArrayList<SscsDocument> newDocuments = (currentDocuments == null) ? new ArrayList<>() : new ArrayList<>(currentDocuments);
@@ -165,7 +163,7 @@ public class EvidenceUploadService {
 
                     List<MultipartFile> convertedFiles = fileToPdfConversionService.convert(singletonList(file));
 
-                    Document document = evidenceManagementService.upload(convertedFiles, DM_STORE_USER_ID).getEmbedded().getDocuments().get(0);
+                    Document document = evidenceManagementService.upload(convertedFiles, idamService.getIdamTokens()).getDocuments().get(0);
 
                     List<E> currentDocuments = documentExtract.getDocuments().apply(caseDetails.getData());
                     ArrayList<E> newDocuments = (currentDocuments == null) ? new ArrayList<>() : new ArrayList<>(currentDocuments);
@@ -295,11 +293,9 @@ public class EvidenceUploadService {
 
     private byte[] getContentInBytesForGivenDocumentStoreUrl(String draftDocUrl) {
         byte[] draftPdfContent;
-        try {
-            draftPdfContent = evidenceManagementService.download(new URI(draftDocUrl), "sscs");
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Error when downloading document from Evidence Management Service..", e);
-        }
+
+        draftPdfContent = evidenceManagementService.download(draftDocUrl, idamService.getIdamTokens());
+
         return draftPdfContent;
     }
 
