@@ -43,9 +43,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.Classification;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -88,6 +88,9 @@ public class SyaEndpointsIt extends AbstractEventIt {
 
     @MockBean
     private DocumentUploadClientApi documentUploadClientApi;
+
+    @MockBean
+    private CaseDocumentClient caseDocumentClient;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> captor;
@@ -138,8 +141,9 @@ public class SyaEndpointsIt extends AbstractEventIt {
                 Arrays.asList("caseworker", "citizen")));
 
         UploadResponse uploadResponse = createUploadResponse();
-        given(documentUploadClientApi.upload(eq(DUMMY_OAUTH_2_TOKEN), eq(AUTH_TOKEN), eq("sscs"),
-            eq(Arrays.asList("caseworker", "citizen")), eq(Classification.RESTRICTED), any())).willReturn(uploadResponse);
+
+        given(caseDocumentClient.uploadDocuments(eq(DUMMY_OAUTH_2_TOKEN), eq(AUTH_TOKEN),
+                eq("Benefit"), eq("SSCS"), any())).willReturn(uploadResponse);
 
     }
 
