@@ -96,15 +96,15 @@ task integration(type: Test) {
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
 
-task functional(type: Test) {
-    useJUnitPlatform()
-    group = 'Functional Tests'
-    description = 'Executes non-destructive functional tests in AAT against a running CCD and notification service'
-    setTestClassesDirs(sourceSets.e2e.output.classesDirs)
-    setClasspath(sourceSets.e2e.runtimeClasspath)
-    include "uk/gov/hmcts/reform/sscs/functional/**"
-    exclude "uk/gov/hmcts/reform/sscs/smoke/**"
-}
+//task functional(type: Test) {
+    //useJUnitPlatform()
+    //group = 'Functional Tests'
+    //description = 'Executes non-destructive functional tests in AAT against a running CCD and notification service'
+    //setTestClassesDirs(sourceSets.e2e.output.classesDirs)
+    //setClasspath(sourceSets.e2e.runtimeClasspath)
+    //include "uk/gov/hmcts/reform/sscs/functional/**"
+    //exclude "uk/gov/hmcts/reform/sscs/smoke/**"
+//}
 
 task fortifyScan(type: JavaExec)  {
     main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
