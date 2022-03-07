@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.sscs.ccd.callback.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.sscs.ccd.callback.DocumentType.*;
 import static uk.gov.hmcts.reform.sscs.ccd.domain.State.READY_TO_LIST;
+import static uk.gov.hmcts.reform.sscs.ccd.domain.YesNo.*;
 import static uk.gov.hmcts.reform.sscs.ccd.presubmit.furtherevidence.actionfurtherevidence.ActionFurtherEvidenceAboutToSubmitHandler.ACTIONS_THAT_REQUIRES_EVIDENCE_ISSUED_SET_TO_YES_AND_NOT_BULK_PRINTED;
 import static uk.gov.hmcts.reform.sscs.ccd.presubmit.furtherevidence.actionfurtherevidence.ActionFurtherEvidenceAboutToSubmitHandler.FURTHER_EVIDENCE_RECEIVED;
 import static uk.gov.hmcts.reform.sscs.ccd.presubmit.furtherevidence.actionfurtherevidence.FurtherEvidenceActionDynamicListItems.ISSUE_FURTHER_EVIDENCE;
@@ -63,8 +64,6 @@ import uk.gov.hmcts.reform.sscs.util.AddedDocumentsUtil;
 public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
 
     private static final String USER_AUTHORISATION = "Bearer token";
-    private static final String NO = "No";
-    private static final String YES = "Yes";
 
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
@@ -190,7 +189,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         SscsDocumentDetails sscsDocumentDetail = response.getData().getSscsDocument().get(0).getValue();
         assertThat(sscsDocumentDetail.getDocumentType(), is(DocumentType.POSTPONEMENT_REQUEST.getValue()));
         assertThat(sscsDocumentDetail.getOriginalPartySender(), is(sscsCaseData.getOriginalSender().getValue().getCode()));
-        assertThat(sscsCaseData.getPostponementRequest().getUnprocessedPostponementRequest(), is(YesNo.YES));
+        assertThat(sscsCaseData.getPostponementRequest().getUnprocessedPostponementRequest(), is(YES));
         assertThat(sscsCaseData.getAppealNotePad().getNotesCollection().stream()
                 .anyMatch(note -> note.getValue().getNoteDetail().equals("Request Detail Test")), is(true));
     }
@@ -203,7 +202,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         DocumentType expectedDocumentType) {
         sscsCaseData.setFurtherEvidenceAction(furtherEvidenceActionList);
         sscsCaseData.setOriginalSender(originalSender);
-        sscsCaseData.setEvidenceHandled(evidenceHandle);
+        sscsCaseData.setEvidenceHandled(isYesOrNo(evidenceHandle));
 
         PreSubmitCallbackResponse<SscsCaseData> response = null;
         try {
@@ -218,7 +217,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
 
     @Test
     public void givenAConfidentialCaseWithScannedDocumentsAndEditedDocument_shouldMoveToSscsDocumentsWithEditedDocument() {
-        sscsCaseData.setIsConfidentialCase(YesNo.YES);
+        sscsCaseData.setIsConfidentialCase(YES);
 
         ScannedDocument scannedDocument = ScannedDocument.builder().value(
                 ScannedDocumentDetails.builder()
@@ -362,7 +361,8 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         assertEquals("www.test.com", sscsDocumentDetail.getDocumentLink().getDocumentUrl());
         assertEquals("2019-06-13", sscsDocumentDetail.getDocumentDateAdded());
         assertEquals("123", sscsDocumentDetail.getControlNumber());
-        String expectedEvidenceIssued = ACTIONS_THAT_REQUIRES_EVIDENCE_ISSUED_SET_TO_YES_AND_NOT_BULK_PRINTED.contains(response.getData().getFurtherEvidenceAction().getValue().getCode()) ? YES : NO;
+        YesNo expectedEvidenceIssued =
+            ACTIONS_THAT_REQUIRES_EVIDENCE_ISSUED_SET_TO_YES_AND_NOT_BULK_PRINTED.contains(response.getData().getFurtherEvidenceAction().getValue().getCode()) ? YES : NO;
         assertEquals(expectedEvidenceIssued, response.getData().getSscsDocument().get(1).getValue().getEvidenceIssued());
         assertNull(response.getData().getScannedDocuments());
         assertEquals(YES, response.getData().getEvidenceHandled());
@@ -646,7 +646,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         docs.add(scannedDocument);
 
         sscsCaseData.setScannedDocuments(docs);
-        sscsCaseData.setIsConfidentialCase(YesNo.NO);
+        sscsCaseData.setIsConfidentialCase(NO);
 
         PreSubmitCallbackResponse<SscsCaseData> response = actionFurtherEvidenceAboutToSubmitHandler.handle(ABOUT_TO_SUBMIT, callback, USER_AUTHORISATION);
 
@@ -668,7 +668,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         docs.add(scannedDocument);
 
         sscsCaseData.setScannedDocuments(docs);
-        sscsCaseData.setIsConfidentialCase(YesNo.YES);
+        sscsCaseData.setIsConfidentialCase(YES);
 
         PreSubmitCallbackResponse<SscsCaseData> response = actionFurtherEvidenceAboutToSubmitHandler.handle(ABOUT_TO_SUBMIT, callback, USER_AUTHORISATION);
 
@@ -753,7 +753,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
 
         sscsCaseData.getFurtherEvidenceAction().setValue(new DynamicListItem(OTHER_DOCUMENT_MANUAL.code, OTHER_DOCUMENT_MANUAL.label));
         sscsCaseData.setPreviousState(previousState);
-        sscsCaseData.setLanguagePreferenceWelsh("yes");
+        sscsCaseData.setLanguagePreferenceWelsh(YES);
 
         ScannedDocument scannedDocument = ScannedDocument.builder().value(
                 ScannedDocumentDetails.builder().fileName("filename.pdf").type(ScannedDocumentType.REINSTATEMENT_REQUEST.getValue())
@@ -834,7 +834,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
                 .builder()
                 .value(
                 ScannedDocumentDetails.builder().fileName("filename.pdf").type(ScannedDocumentType.URGENT_HEARING_REQUEST.getValue())
-                        .url(DocumentLink.builder().documentUrl("test.com").build()).includeInBundle(includeInBundle).build()).build();
+                        .url(DocumentLink.builder().documentUrl("test.com").build()).includeInBundle(isYesOrNo(includeInBundle)).build()).build();
         List<ScannedDocument> docs = new ArrayList<>();
 
         docs.add(scannedDocument);
@@ -925,7 +925,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         sscsCaseData.getFurtherEvidenceAction().setValue(new DynamicListItem(furtherEvidenceActionDynamicListItem.code, furtherEvidenceActionDynamicListItem.label));
         sscsCaseData.getOriginalSender().setValue(new DynamicListItem(APPELLANT.getCode(), APPELLANT.getLabel()));
         sscsCaseData.setJointParty(YES);
-        sscsCaseData.setIsProgressingViaGaps(isProgressingViaGaps);
+        sscsCaseData.setIsProgressingViaGaps(isYesOrNo(isProgressingViaGaps));
         sscsCaseData.setConfidentialityRequestOutcomeJointParty(createDatedRequestOutcome(RequestOutcome.GRANTED));
 
         ScannedDocument scannedDocument = ScannedDocument.builder().value(
@@ -989,7 +989,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         sscsCaseData.getOriginalSender().setValue(new DynamicListItem(APPELLANT.getCode(), APPELLANT.getLabel()));
         sscsCaseData.getFurtherEvidenceAction().setValue(new DynamicListItem(OTHER_DOCUMENT_MANUAL.code, OTHER_DOCUMENT_MANUAL.label));
         sscsCaseData.getAppeal().setBenefitType(BenefitType.builder().code("childSupport").build());
-        sscsCaseData.setIsConfidentialCase(YesNo.YES);
+        sscsCaseData.setIsConfidentialCase(YES);
 
         ScannedDocument scannedDocument = ScannedDocument.builder().value(
                 ScannedDocumentDetails.builder().fileName("filename.pdf").type(ScannedDocumentType.OTHER.getValue())
@@ -1043,7 +1043,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         sscsCaseData.getOriginalSender().setValue(new DynamicListItem(APPELLANT.getCode(), APPELLANT.getLabel()));
         sscsCaseData.getFurtherEvidenceAction().setValue(new DynamicListItem(OTHER_DOCUMENT_MANUAL.code, OTHER_DOCUMENT_MANUAL.label));
         sscsCaseData.getAppeal().setBenefitType(BenefitType.builder().code("childSupport").build());
-        sscsCaseData.setIsConfidentialCase(YesNo.NO);
+        sscsCaseData.setIsConfidentialCase(NO);
 
         ScannedDocument scannedDocument = ScannedDocument.builder().value(
                 ScannedDocumentDetails.builder().fileName("filename.pdf").type(ScannedDocumentType.OTHER.getValue())
@@ -1302,7 +1302,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
             .builder()
             .value(
                 ScannedDocumentDetails.builder().fileName("filename.pdf").type(ScannedDocumentType.OTHER.getValue())
-                    .url(DocumentLink.builder().documentUrl("test.com").build()).includeInBundle(includeInBundle).build()).build();
+                    .url(DocumentLink.builder().documentUrl("test.com").build()).includeInBundle(isYesOrNo(includeInBundle)).build()).build();
         List<ScannedDocument> docs = new ArrayList<>();
         docs.add(scannedDocument);
         sscsCaseData.setScannedDocuments(docs);
@@ -1364,7 +1364,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
             .builder()
             .value(
                 ScannedDocumentDetails.builder().fileName("filename.pdf").type(ScannedDocumentType.OTHER.getValue())
-                    .url(DocumentLink.builder().documentUrl("test.com").build()).includeInBundle(includeInBundle).build()).build();
+                    .url(DocumentLink.builder().documentUrl("test.com").build()).includeInBundle(isYesOrNo(includeInBundle)).build()).build();
         List<ScannedDocument> docs = new ArrayList<>();
 
         docs.add(scannedDocument);
@@ -1394,7 +1394,7 @@ public class ActionFurtherEvidenceAboutToSubmitHandlerTest {
         DynamicList originalSender = buildOriginalSenderItemListForGivenOption("appellant",
                 "Appellant (or Appointee)");
 
-        String evidenceHandle = null;
+        YesNo evidenceHandle = null;
 
         int numberOfTasks = 3;
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
