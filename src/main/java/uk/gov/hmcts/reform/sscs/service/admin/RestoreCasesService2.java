@@ -108,12 +108,12 @@ public class RestoreCasesService2 {
         try {
             reader = new CSVReader(new InputStreamReader(classPathResource.getInputStream()));
 
-//            reader.readNext();
-//
-//            List<String[]> linesList = reader.readAll();
-//            linesList.forEach(line ->
-//                allCasesToRestore.add(line[0])
-//            );
+            reader.readNext();
+
+            List<String[]> linesList = reader.readAll();
+            linesList.forEach(line ->
+                allCasesToRestore.add(line[0])
+            );
 
         } catch (IOException e) {
             log.error("IOException from RestoreCasesService2: ", e);
